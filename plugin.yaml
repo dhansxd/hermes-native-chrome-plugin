@@ -1,0 +1,15 @@
+name: dyra-native-chrome
+version: 0.2.0a1
+manifest_version: 2
+api_version: 1
+description: macOS original Chrome admission middleware with explicit profile-scoped lifecycle (preview)
+platforms: [macos]
+provides_tools: []
+provides_hooks: []
+provides_middleware: [tool_execution]
+requires_env: []
+capabilities: []
+python_dependencies:
+  - "aiohttp==3.14.3; sys_platform == 'darwin'"
+  - "psutil==7.2.2; sys_platform == 'darwin'"
+  - "PyYAML==6.0.3; sys_platform == 'darwin'"
