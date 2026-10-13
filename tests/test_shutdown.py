@@ -13,7 +13,7 @@ import time
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRATCH = Path.home() / '.hermes/cache/scratch'
+from support import SCRATCH
 
 
 def load(name):

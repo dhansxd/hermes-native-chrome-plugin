@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRATCH = Path.home() / '.hermes/cache/scratch'
+from support import SCRATCH
 PRODUCTION = 'dyra-native-chrome'
 CANDIDATE = 'dyra-native-chrome-candidate'
 

@@ -1,0 +1,6 @@
+# Fake-CDP and loopback fixtures only; no Chrome install is required.
+browser-harness==0.1.13
+aiohttp==3.14.3
+psutil==7.2.2
+PyYAML==6.0.3
+packaging==26.0

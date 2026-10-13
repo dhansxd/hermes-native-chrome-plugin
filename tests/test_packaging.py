@@ -9,6 +9,8 @@ import types
 import unittest
 from unittest.mock import patch
 
+from support import SCRATCH
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -68,7 +70,7 @@ class PackagingTests(unittest.TestCase):
     def test_selection_is_read_per_call_without_hot_reload(self):
         plugin = load_root()
         self.assertTrue(callable(getattr(plugin, 'plugin_selected', None)))
-        with tempfile.TemporaryDirectory(dir=Path.home() / '.hermes/cache/scratch') as d:
+        with tempfile.TemporaryDirectory(dir=SCRATCH) as d:
             home = Path(d)
             self.assertFalse(plugin.plugin_selected(home))
             (home / 'config.yaml').write_text('plugins:\n  enabled: [dyra-native-chrome]\n')
@@ -83,7 +85,7 @@ class PackagingTests(unittest.TestCase):
             def __init__(self, home): self.home = home
             def register_middleware(self, kind, callback): self.callback = callback
             def on_unload(self, callback): self.cleanup = callback
-        with tempfile.TemporaryDirectory(dir=Path.home() / '.hermes/cache/scratch') as d:
+        with tempfile.TemporaryDirectory(dir=SCRATCH) as d:
             home = Path(d)
             (home / 'config.yaml').write_text('plugins:\n  enabled: [dyra-native-chrome]\nbrowser:\n  cdp_url: http://127.0.0.1:19347\n')
             journal = plugin.load_sibling('lifecycle').state_path(home)
@@ -131,7 +133,7 @@ class PackagingTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'unsupported_platform'):
                 server.make_app(token_file=ROOT / 'must-not-create' / 'token')
         self.assertFalse((ROOT / 'must-not-create').exists())
-        with tempfile.TemporaryDirectory(dir=Path.home() / '.hermes/cache/scratch') as d:
+        with tempfile.TemporaryDirectory(dir=SCRATCH) as d:
             with patch('platform.system', return_value='Darwin'):
                 app = server.make_app(home=d)
             self.assertTrue(any(route.resource.canonical == '/control/identity' for route in app.router.routes()))
@@ -194,7 +196,7 @@ class PackagingTests(unittest.TestCase):
         self.assertFalse(hasattr(unsupported, 'callback'))
 
     def test_relocated_siblings_ignore_global_module_collisions(self):
-        with tempfile.TemporaryDirectory(dir=Path.home() / '.hermes/cache/scratch') as directory:
+        with tempfile.TemporaryDirectory(dir=SCRATCH) as directory:
             root = Path(directory) / 'relocated'
             shutil.copytree(ROOT, root, ignore=shutil.ignore_patterns('__pycache__', 'tests'))
             plugin = load_root(root, 'relocated_fixture')
@@ -219,7 +221,7 @@ class DrainTests(unittest.IsolatedAsyncioTestCase):
         plugin = load_root()
         lifecycle = plugin.load_sibling('lifecycle')
         server = plugin.load_sibling('server')
-        with tempfile.TemporaryDirectory(dir=Path.home() / '.hermes/cache/scratch') as d:
+        with tempfile.TemporaryDirectory(dir=SCRATCH) as d:
             home = Path(d).resolve()
             cli = OfficialCLI(home)
             cli.write({'browser': {'backend': 'local', 'headed': False},
@@ -266,7 +268,7 @@ class DrainTests(unittest.IsolatedAsyncioTestCase):
         server = plugin.load_sibling('server')
         lifecycle = plugin.load_sibling('lifecycle')
         controller = plugin.load_sibling('controller')
-        with tempfile.TemporaryDirectory(dir=Path.home() / '.hermes/cache/scratch') as home:
+        with tempfile.TemporaryDirectory(dir=SCRATCH) as home:
             with patch('platform.system', return_value='Darwin'):
                 app = server.make_app(home=home)
             async with TestServer(app, host='127.0.0.1') as endpoint:
